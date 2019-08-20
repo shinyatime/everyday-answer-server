@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.modules.exam.dao.ExamQuestionDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.modules.exam.entity.ExamQuestionEntity" id="examQuestionMap">
+        <result property="id" column="id"/>
+        <result property="activityid" column="activityid"/>
+        <result property="type" column="type"/>
+        <result property="stem" column="stem"/>
+        <result property="metas" column="metas"/>
+        <result property="score" column="score"/>
+        <result property="answer" column="answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createUser" column="create_user"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+
+</mapper>

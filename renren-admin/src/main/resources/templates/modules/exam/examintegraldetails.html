@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+		<#include "/header.html">
+    <script src="${request.contextPath}/statics/plugins/laydate/laydate.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList">
+        <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" v-model="q.userName" placeholder="用户名">
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" id="startTime" v-model="q.startTime" placeholder="开始时间">
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" id="endTime" v-model="q.endTime" placeholder="结束时间">
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
+			<#if shiro.hasPermission("exam:examintegraldetails:save")>
+            <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			</#if>
+			<#if shiro.hasPermission("exam:examintegraldetails:update")>
+            <a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			</#if>
+			<#if shiro.hasPermission("exam:examintegraldetails:delete")>
+            <a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+			</#if>
+        </div>
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+
+    <div v-show="!showList" class="panel panel-default">
+        <div class="panel-heading">{{title}}</div>
+        <form class="form-horizontal">
+														                    <div class="form-group">
+                        <div class="col-sm-2 control-label">用户id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.userId" placeholder="用户id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">openid</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.openid" placeholder="openid"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">联合id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.unionid" placeholder="联合id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">积分描述</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.content" placeholder="积分描述"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">积分</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.integral" placeholder="积分"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">积分类型</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.integralType" placeholder="积分类型"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">活动id</div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.activityid" placeholder="活动id"/>
+                        </div>
+                    </div>
+											                    <div class="form-group">
+                        <div class="col-sm-2 control-label">创建时间 </div>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" v-model="examIntegralDetails.createTime" placeholder="创建时间 "/>
+                        </div>
+                    </div>
+							            <div class="form-group">
+                <div class="col-sm-2 control-label"></div>
+                <input type="button" class="btn btn-primary" id="btnSaveOrUpdate" data-loading-text="保存中..." @click="saveOrUpdate" value="确定"/>
+                &nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="${request.contextPath}/statics/js/modules/exam/examintegraldetails.js?_${.now?long}"></script>
+</body>
+</html>
