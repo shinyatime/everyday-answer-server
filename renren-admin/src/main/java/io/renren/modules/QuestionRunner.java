@@ -1,23 +1,21 @@
 package io.renren.modules;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.RedisUtils;
-import io.renren.modules.exam.entity.ExamQuestionEntity;
-import io.renren.modules.exam.entity.ExamQuestionidEntity;
 import io.renren.modules.exam.entity.ExamUserEntity;
 import io.renren.modules.exam.service.ExamQuestionService;
-import io.renren.modules.exam.service.ExamQuestionidService;
 import io.renren.modules.exam.service.ExamUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import sun.applet.Main;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Order(value = 2)
@@ -41,8 +39,11 @@ public class QuestionRunner implements ApplicationRunner {
     }
 
     private void initEveryDayQuestion() {
-        examQuestionService.saveEveryDayQuestion();
+        //examQuestionService.saveEveryDayQuestion();
+
+        examQuestionService.getRandomEveryDayQuestion();
     }
+
 
     private void initRedisUser() {
         redisUtils.delete("regUserList");

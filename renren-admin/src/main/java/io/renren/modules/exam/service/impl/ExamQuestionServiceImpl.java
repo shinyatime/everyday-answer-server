@@ -1,32 +1,30 @@
 package io.renren.modules.exam.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.renren.common.exception.RRException;
-import io.renren.common.utils.*;
+import io.renren.common.utils.DateUtils;
+import io.renren.common.utils.PageUtils;
+import io.renren.common.utils.Query;
+import io.renren.common.utils.RedisUtils;
+import io.renren.modules.exam.dao.ExamQuestionDao;
 import io.renren.modules.exam.entity.*;
 import io.renren.modules.exam.service.ExamIntegralDetailsService;
+import io.renren.modules.exam.service.ExamQuestionService;
 import io.renren.modules.exam.service.ExamQuestionidService;
 import io.renren.modules.exam.service.ExamUserQuestionService;
-import io.renren.modules.sys.entity.SysUserEntity;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.util.*;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import io.renren.modules.exam.dao.ExamQuestionDao;
-import io.renren.modules.exam.service.ExamQuestionService;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @Service("examQuestionService")
@@ -96,6 +94,35 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
 
         redisUtils.setHash("question_list",map);
         redisUtils.setList("question_ids",ids);
+        return true;
+    }
+
+    public boolean getRandomEveryDayQuestion(){
+        redisUtils.delete("question_list","question_ids");
+        QueryWrapper<ExamQuestionEntity> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("status","1");
+        List<ExamQuestionEntity> list = super.list(wrapper1);
+        if (list.size()==0) {
+            return false;
+        }
+        if (list.size()>5) {
+            int num = list.size() - 5;
+            for (int i = 0 ; i < num ; i++) {
+                list.remove(new Random().nextInt(list.size()));
+            }
+        }
+
+        List<Object> ids = new ArrayList<>();
+        Map<String,Object> map = new HashMap<>();
+        for (int i = 0 ; i < list.size() ; i++) {
+            ExamQuestionEntity examQuestionEntity = list.get(i);
+            map.put(String.valueOf(examQuestionEntity.getId()),examQuestionEntity);
+            ids.add(examQuestionEntity.getId()+"");
+        }
+
+        redisUtils.setHash("question_list",map);
+        redisUtils.setList("question_ids",ids);
+        //System.out.println(redisUtils.getList("question_ids"));
         return true;
     }
 

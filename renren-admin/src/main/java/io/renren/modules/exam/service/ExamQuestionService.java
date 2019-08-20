@@ -2,7 +2,6 @@ package io.renren.modules.exam.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.renren.common.utils.PageUtils;
-import io.renren.common.utils.R;
 import io.renren.modules.exam.entity.ExamQuestionEntity;
 import io.renren.modules.exam.entity.ExamUserEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +18,8 @@ import java.util.Map;
 public interface ExamQuestionService extends IService<ExamQuestionEntity> {
 
     boolean saveEveryDayQuestion();
+
+    boolean getRandomEveryDayQuestion();
 
     PageUtils queryPage(Map<String, Object> params);
 

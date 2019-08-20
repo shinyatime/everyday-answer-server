@@ -15,7 +15,8 @@ public class EveryDayQuestion implements ITask {
 
     @Override
     public void run(String params) {
-        examQuestionService.saveEveryDayQuestion();
+        //examQuestionService.saveEveryDayQuestion();
+        examQuestionService.getRandomEveryDayQuestion();
         //System.out.println("11111111111111111111111111");
     }
 }
