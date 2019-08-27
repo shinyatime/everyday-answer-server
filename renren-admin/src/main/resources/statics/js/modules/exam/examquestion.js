@@ -146,7 +146,11 @@ var vm = new Vue({
         showChoose: false,
         metalist:[],
 		examQuestion: {},
-        isup: false
+        isup: false,
+        q: {
+            stem:null,
+            metas:null
+        }
 	},
 	methods: {
 		query: function () {
@@ -239,7 +243,8 @@ var vm = new Vue({
 		reload: function (event) {
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
-			$("#jqGrid").jqGrid('setGridParam',{ 
+			$("#jqGrid").jqGrid('setGridParam',{
+                postData:{'stem': vm.q.stem,'metas': vm.q.metas},
                 page:page
             }).trigger("reloadGrid");
 		},

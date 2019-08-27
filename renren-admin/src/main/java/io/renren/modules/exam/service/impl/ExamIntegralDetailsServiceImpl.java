@@ -20,11 +20,14 @@ public class ExamIntegralDetailsServiceImpl extends ServiceImpl<ExamIntegralDeta
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<ExamIntegralDetailsEntity> page = this.page(
-                new Query<ExamIntegralDetailsEntity>().getPage(params),
-                new QueryWrapper<ExamIntegralDetailsEntity>()
-        );
+//        IPage<ExamIntegralDetailsEntity> page = this.page(
+//                new Query<ExamIntegralDetailsEntity>().getPage(params),
+//                new QueryWrapper<ExamIntegralDetailsEntity>()
+//        );
 
+        IPage<ExamIntegralDetailsVO> page = baseMapper.getIntegralDetailsList(
+                new Query<ExamIntegralDetailsVO>().getPage(params,"create_time",false),params
+        );
         return new PageUtils(page);
     }
 

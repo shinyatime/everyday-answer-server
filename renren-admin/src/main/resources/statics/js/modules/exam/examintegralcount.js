@@ -2,14 +2,11 @@ $(function () {
     $("#jqGrid").jqGrid({
         url: baseURL + 'exam/examintegralcount/list',
         datatype: "json",
-        colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '用户id', name: 'userId', index: 'user_id', width: 80 }, 			
-			{ label: '联合id', name: 'unionid', index: 'unionid', width: 80 }, 			
-			{ label: '总积分', name: 'integralCount', index: 'integral_count', width: 80 }, 			
-			{ label: '活动id', name: 'activityid', index: 'activityid', width: 80 }, 			
-			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '', name: 'updateTime', index: 'update_time', width: 80 }			
+        colModel: [
+            { label: '', name: 'userId', width: 20, hidden: true,key: true  },
+			{ label: '姓名', name: 'userName', index: 'user_name', width: 80 },
+			{ label: '总积分', name: 'integralCount', index: 'integral_count', width: 80 },
+			{ label: '最后答题时间', name: 'updateTime', index: 'update_time', width: 80, sortable: false }
         ],
 		viewrecords: true,
         height: 385,
@@ -36,6 +33,44 @@ $(function () {
         	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
         }
     });
+
+    $("#jqGrid1").jqGrid({
+        url: baseURL + 'exam/examintegraldetails/list',
+        postData: {"userId":0},
+        datatype: "json",
+        colModel: [
+            { label: '用户姓名', name: 'userName', index: 'user_name', width: 80 },
+            { label: '积分描述', name: 'content', index: 'content', width: 80 },
+            { label: '正确数', name: 'rightNum', index: 'right_num', width: 80 },
+            { label: '总题数', name: 'count', index: 'count', width: 80 },
+            { label: '积分', name: 'integral', index: 'integral', width: 80 },
+            { label: '创建时间 ', name: 'createTime', index: 'create_time', width: 80 }
+        ],
+        viewrecords: true,
+        height: 385,
+        rowNum: 10,
+        rowList : [10,30,50],
+        rownumbers: true,
+        rownumWidth: 25,
+        autowidth:true,
+        multiselect: true,
+        pager: "#jqGridPager1",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page",
+            rows:"limit",
+            order: "order"
+        },
+        gridComplete:function(){
+            //隐藏grid底部滚动条
+            $("#jqGrid1").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        }
+    });
 });
 
 var vm = new Vue({
@@ -49,6 +84,15 @@ var vm = new Vue({
 		query: function () {
 			vm.reload();
 		},
+        query1: function (event) {
+            var id = getSelectedRow();
+            vm.showList = false;
+            var page = $("#jqGrid1").jqGrid('getGridParam','page');
+            $("#jqGrid1").jqGrid('setGridParam',{
+                page:page,
+                postData: {'userId':id}
+            }).trigger("reloadGrid");
+        },
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";

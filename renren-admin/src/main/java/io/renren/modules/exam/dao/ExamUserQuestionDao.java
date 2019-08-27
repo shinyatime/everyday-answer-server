@@ -21,7 +21,7 @@ import java.util.Map;
 @Mapper
 public interface ExamUserQuestionDao extends BaseMapper<ExamUserQuestionEntity> {
 
-    IPage<UserQuestionVO> getUserQuestion(Page page, @Param("map") Map<String,Object> map);
+    IPage<UserQuestionVO> getUserQuestion(Page page, @Param("map") Map<String, Object> map);
 
     UserQuestionVO getUserQuestionOne(Long id);
 }

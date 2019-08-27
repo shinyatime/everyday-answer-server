@@ -22,7 +22,7 @@ public interface ExamUserQuestionService extends IService<ExamUserQuestionEntity
 
     boolean saveAnswer(ExamUserQuestionEntity userQuestionEntity);
 
-    IPage<UserQuestionVO> getUserQuestion(Page page, Map<String,Object> map);
+    IPage<UserQuestionVO> getUserQuestion(Page page, Map<String, Object> map);
 
     UserQuestionVO getUserQuestionOne(Long id);
 }

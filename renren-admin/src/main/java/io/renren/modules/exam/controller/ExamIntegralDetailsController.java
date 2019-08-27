@@ -43,8 +43,8 @@ public class ExamIntegralDetailsController {
     @RequiresPermissions("exam:examintegraldetails:list")
     public R list(@RequestParam Map<String, Object> params){
 
-        int current = params.containsKey("page")?Integer.valueOf(params.get("page").toString()):0;
-        int sizt = params.containsKey("limit")?Integer.valueOf(params.get("limit").toString()):2;
+        //int current = params.containsKey("page")?Integer.valueOf(params.get("page").toString()):0;
+        //int sizt = params.containsKey("limit")?Integer.valueOf(params.get("limit").toString()):2;
 
         //PageUtils page = examIntegralDetailsService.queryPage(params);
         String startTime = params.containsKey("startTime")?params.get("startTime").toString():"";
@@ -57,8 +57,9 @@ public class ExamIntegralDetailsController {
         }
         params.put("startTime",startTime);
         params.put("endTime",endTime);
-        IPage<ExamIntegralDetailsVO> ipage = examIntegralDetailsService.getIntegralDetailsList(new Page(current,sizt),params);
-        PageUtils page = new PageUtils(ipage);
+        //IPage<ExamIntegralDetailsVO> ipage = examIntegralDetailsService.getIntegralDetailsList(new Page(current,sizt),params);
+        //PageUtils page = new PageUtils(ipage);
+        PageUtils page = examIntegralDetailsService.queryPage(params);
         return R.ok().put("page", page);
     }
 

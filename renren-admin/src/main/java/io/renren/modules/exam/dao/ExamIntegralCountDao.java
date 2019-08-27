@@ -1,8 +1,13 @@
 package io.renren.modules.exam.dao;
 
-import io.renren.modules.exam.entity.ExamIntegralCountEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.renren.modules.exam.entity.ExamIntegralCountEntity;
+import io.renren.modules.exam.vo.ExamIntegralCountVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
  * 
@@ -13,5 +18,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ExamIntegralCountDao extends BaseMapper<ExamIntegralCountEntity> {
+
+    IPage<ExamIntegralCountVO> getIntegralCountList(IPage<ExamIntegralCountVO> page, @Param("map") Map<String, Object> map);
 	
 }

@@ -3,9 +3,9 @@ $(function () {
         url: baseURL + 'exam/examintegraldetails/list',
         datatype: "json",
         colModel: [
-			{ label: '用户姓名', name: 'userName', index: 'userName', width: 80 },
+			{ label: '用户姓名', name: 'userName', index: 'user_name', width: 80 },
 			{ label: '积分描述', name: 'content', index: 'content', width: 80 },
-            { label: '正确数', name: 'rightNum', index: 'rightNum', width: 80 },
+            { label: '正确数', name: 'rightNum', index: 'right_num', width: 80 },
             { label: '总题数', name: 'count', index: 'count', width: 80 },
             { label: '积分', name: 'integral', index: 'integral', width: 80 },
 			{ label: '创建时间 ', name: 'createTime', index: 'create_time', width: 80 }			

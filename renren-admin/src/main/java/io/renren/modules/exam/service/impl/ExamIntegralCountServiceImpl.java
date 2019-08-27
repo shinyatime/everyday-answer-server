@@ -1,5 +1,6 @@
 package io.renren.modules.exam.service.impl;
 
+import io.renren.modules.exam.vo.ExamIntegralCountVO;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,9 +19,9 @@ public class ExamIntegralCountServiceImpl extends ServiceImpl<ExamIntegralCountD
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<ExamIntegralCountEntity> page = this.page(
-                new Query<ExamIntegralCountEntity>().getPage(params),
-                new QueryWrapper<ExamIntegralCountEntity>()
+        IPage<ExamIntegralCountVO> page = baseMapper.getIntegralCountList(
+                new Query<ExamIntegralCountVO>().getPage(params,"integral_count",false),
+                params
         );
 
         return new PageUtils(page);

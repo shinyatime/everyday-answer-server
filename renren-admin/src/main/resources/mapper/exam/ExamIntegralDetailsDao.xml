@@ -23,6 +23,10 @@
         id.create_time as create_time,id.count as count,id.right_num as right_num,id.finish_num as finish_num
         from exam_integral_details id left join exam_user u on id.user_id = u.id
         where 1=1
+        <if test='map.userId!=null and map.userId!="" '>
+            and u.id = #{map.userId}
+        </if>
+
         <if test='map.userName!=null and map.userName!="" '>
         and u.user_name = #{map.userName}
         </if>
@@ -34,6 +38,6 @@
         <if test='map.endTime!=null and map.endTime!="" '>
         and DATE_FORMAT(u.create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{map.endTime}
         </if>
-        order by id.create_time desc
+
     </select>
 </mapper>

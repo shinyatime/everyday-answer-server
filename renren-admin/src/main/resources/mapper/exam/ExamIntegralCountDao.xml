@@ -14,5 +14,10 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <select id="getIntegralCountList" parameterType="Map" resultType="io.renren.modules.exam.vo.ExamIntegralCountVO">
+        select u.user_name as user_name,ic.*
+        from exam_integral_count ic left join exam_user u on ic.user_id = u.id
+        where 1=1
 
+    </select>
 </mapper>
