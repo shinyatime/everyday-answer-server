@@ -7,6 +7,7 @@ import io.renren.modules.exam.service.ExamIntegralDetailsService;
 import io.renren.modules.exam.service.ExamQuestionidService;
 import io.renren.modules.exam.service.ExamUserQuestionService;
 import io.renren.modules.sys.entity.SysUserEntity;
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -132,9 +133,15 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
     @Override
 
     public PageUtils queryPage(Map<String, Object> params) {
+        String stem = (String)params.get("stem");
+        String metas = (String)params.get("metas");
+
         IPage<ExamQuestionEntity> page = this.page(
                 new Query<ExamQuestionEntity>().getPage(params),
-                new QueryWrapper<ExamQuestionEntity>().orderByDesc("id")
+                new QueryWrapper<ExamQuestionEntity>()
+                        .like(StringUtils.isNotBlank(stem),"stem", stem)
+                        .like(StringUtils.isNotBlank(metas),"metas", metas)
+                        .orderByDesc("id")
         );
 
         return new PageUtils(page);

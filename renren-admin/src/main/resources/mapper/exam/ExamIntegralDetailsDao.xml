@@ -28,7 +28,7 @@
         </if>
 
         <if test='map.userName!=null and map.userName!="" '>
-        and u.user_name = #{map.userName}
+        and u.user_name like CONCAT('%',#{map.userName,jdbcType=VARCHAR},'%')
         </if>
 
         <if test='map.startTime!=null and map.startTime!="" '>
