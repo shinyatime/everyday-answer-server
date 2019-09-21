@@ -32,12 +32,31 @@
         </if>
 
         <if test='map.startTime!=null and map.startTime!="" '>
-        and DATE_FORMAT(u.create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{map.startTime}
+        and DATE_FORMAT(id.create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{map.startTime}
         </if>
 
         <if test='map.endTime!=null and map.endTime!="" '>
-        and DATE_FORMAT(u.create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{map.endTime}
+        and DATE_FORMAT(id.create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{map.endTime}
         </if>
 
+    </select>
+
+    <select id="getIntegralDetailsCountList" parameterType="Map" resultType="io.renren.modules.exam.vo.ExamIntegralDetailsVO">
+        select
+        id.user_id as user_id,max(u.user_name) as user_name,count(id.integral) as integral,
+        max(id.create_time) as create_time
+        from exam_integral_details id left join exam_user u on id.user_id = u.id
+        where 1=1
+        and integral = 1
+        and user_name is not null
+        <if test='map.startTime!=null and map.startTime!="" '>
+            and DATE_FORMAT(id.create_time,'%Y-%m-%d %H:%i:%s') &gt;= #{map.startTime}
+        </if>
+
+        <if test='map.endTime!=null and map.endTime!="" '>
+            and DATE_FORMAT(id.create_time,'%Y-%m-%d %H:%i:%s') &lt;= #{map.endTime}
+        </if>
+        group by user_id
+        order by integral desc, create_time
     </select>
 </mapper>

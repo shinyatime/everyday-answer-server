@@ -20,6 +20,10 @@ public interface ExamIntegralDetailsService extends IService<ExamIntegralDetails
 
     PageUtils queryPage(Map<String, Object> params);
 
+    PageUtils queryPageCount(Map<String, Object> params);
+
     IPage<ExamIntegralDetailsVO> getIntegralDetailsList(Page page, Map<String, Object> params);
+
+    IPage<ExamIntegralDetailsVO> getIntegralDetailsCountList(Page page, Map<String, Object> params);
 }
 

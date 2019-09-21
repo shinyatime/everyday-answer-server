@@ -5,8 +5,8 @@ $(function () {
         colModel: [
             { label: '', name: 'userId', width: 20, hidden: true,key: true  },
 			{ label: '姓名', name: 'userName', index: 'user_name', width: 80 },
-			{ label: '总积分', name: 'integralCount', index: 'integral_count', width: 80 },
-			{ label: '最后答题时间', name: 'updateTime', index: 'update_time', width: 80, sortable: false }
+			{ label: '总积分', name: 'integral', index: 'integral', width: 80 },
+			{ label: '最后答题时间', name: 'createTime', index: 'create_time', width: 80, sortable: false }
         ],
 		viewrecords: true,
         height: 385,
@@ -44,7 +44,7 @@ $(function () {
             { label: '正确数', name: 'rightNum', index: 'right_num', width: 80 },
             { label: '总题数', name: 'count', index: 'count', width: 80 },
             { label: '积分', name: 'integral', index: 'integral', width: 80 },
-            { label: '创建时间 ', name: 'createTime', index: 'create_time', width: 80 }
+            { label: '创建时间 ', name: 'createTime', index: 'create_time', width: 160 }
         ],
         viewrecords: true,
         height: 385,
@@ -71,6 +71,13 @@ $(function () {
             $("#jqGrid1").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
+
+    laydate.render({
+        elem: '#startTime'
+    });
+    laydate.render({
+        elem: '#endTime'
+    });
 });
 
 var vm = new Vue({
@@ -78,7 +85,11 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		title: null,
-		examIntegralCount: {}
+		examIntegralCount: {},
+        q: {
+            startTime:null,
+            endTime:null
+        }
 	},
 	methods: {
 		query: function () {
@@ -86,11 +97,13 @@ var vm = new Vue({
 		},
         query1: function (event) {
             var id = getSelectedRow();
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
             vm.showList = false;
             var page = $("#jqGrid1").jqGrid('getGridParam','page');
             $("#jqGrid1").jqGrid('setGridParam',{
                 page:page,
-                postData: {'userId':id}
+                postData: {'userId':id,'startTime': startTime,'endTime': endTime}
             }).trigger("reloadGrid");
         },
 		add: function(){
@@ -167,8 +180,11 @@ var vm = new Vue({
 		},
 		reload: function (event) {
 			vm.showList = true;
+            var startTime = $("#startTime").val();
+            var endTime = $("#endTime").val();
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
-			$("#jqGrid").jqGrid('setGridParam',{ 
+			$("#jqGrid").jqGrid('setGridParam',{
+                postData:{'startTime': startTime,'endTime': endTime},
                 page:page
             }).trigger("reloadGrid");
 		}

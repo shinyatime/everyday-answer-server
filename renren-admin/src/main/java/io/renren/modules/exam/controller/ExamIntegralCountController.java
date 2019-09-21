@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import io.renren.common.validator.ValidatorUtils;
+import io.renren.modules.exam.service.ExamIntegralDetailsService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +33,28 @@ public class ExamIntegralCountController {
     @Autowired
     private ExamIntegralCountService examIntegralCountService;
 
+    @Autowired
+    private ExamIntegralDetailsService examIntegralDetailsService;
+
     /**
      * 列表
      */
     @RequestMapping("/list")
     @RequiresPermissions("exam:examintegralcount:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = examIntegralCountService.queryPage(params);
+
+        String startTime = params.containsKey("startTime")?params.get("startTime").toString():"";
+        String endTime = params.containsKey("endTime")?params.get("endTime").toString():"";
+
+        if (!"".equals(startTime) && startTime.length()>=10) {
+            startTime = startTime.substring(0,10) + " 00:00:00";
+        }
+        if (!"".equals(endTime) && endTime.length()>=10) {
+            endTime = endTime.substring(0,10) + " 23:59:59";
+        }
+        params.put("startTime",startTime);
+        params.put("endTime",endTime);
+        PageUtils page = examIntegralDetailsService.queryPageCount(params);
 
         return R.ok().put("page", page);
     }

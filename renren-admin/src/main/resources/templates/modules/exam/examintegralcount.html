@@ -3,11 +3,19 @@
 <head>
     <title></title>
 		<#include "/header.html">
+    <script src="${request.contextPath}/statics/plugins/laydate/laydate.js"></script>
 </head>
 <body>
 <div id="rrapp" v-cloak>
     <div v-show="showList">
         <div class="grid-btn">
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" id="startTime" v-model="q.startTime" placeholder="开始时间">
+            </div>
+            <div class="form-group col-sm-2">
+                <input type="text" class="form-control" id="endTime" v-model="q.endTime" placeholder="结束时间">
+            </div>
+            <a class="btn btn-default" @click="query">查询</a>
             <a class="btn btn-primary" @click="query1">详情</a>
         </div>
         <table id="jqGrid"></table>

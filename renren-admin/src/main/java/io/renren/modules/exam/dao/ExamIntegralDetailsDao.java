@@ -21,4 +21,6 @@ import java.util.Map;
 public interface ExamIntegralDetailsDao extends BaseMapper<ExamIntegralDetailsEntity> {
 
     IPage<ExamIntegralDetailsVO> getIntegralDetailsList(IPage<ExamIntegralDetailsVO> page, @Param("map") Map<String, Object> map);
+
+    IPage<ExamIntegralDetailsVO> getIntegralDetailsCountList(IPage<ExamIntegralDetailsVO> page, @Param("map") Map<String, Object> map);
 }

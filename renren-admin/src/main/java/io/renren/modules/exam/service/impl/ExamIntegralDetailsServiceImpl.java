@@ -32,8 +32,22 @@ public class ExamIntegralDetailsServiceImpl extends ServiceImpl<ExamIntegralDeta
     }
 
     @Override
+    public PageUtils queryPageCount(Map<String, Object> params) {
+
+        IPage<ExamIntegralDetailsVO> page = baseMapper.getIntegralDetailsCountList(
+                new Query<ExamIntegralDetailsVO>().getPage(params),params
+        );
+        return new PageUtils(page);
+    }
+
+    @Override
     public IPage<ExamIntegralDetailsVO> getIntegralDetailsList(Page page, Map<String, Object> params) {
         return baseMapper.getIntegralDetailsList(page,params);
+    }
+
+    @Override
+    public IPage<ExamIntegralDetailsVO> getIntegralDetailsCountList(Page page, Map<String, Object> params) {
+        return baseMapper.getIntegralDetailsCountList(page,params);
     }
 
 }
