@@ -82,6 +82,16 @@
             <artifactId>velocity</artifactId>
             <groupId>org.apache.velocity</groupId>
             <version>${velocity.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-collections</groupId>
+                    <artifactId>commons-collections</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- mysql驱动 -->
         <dependency>
