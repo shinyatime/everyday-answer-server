@@ -33,4 +33,6 @@ public class ExamQuestionidEntity implements Serializable {
 	 */
 	private Long questionEndid;
 
+	private String questionIds;
+
 }

@@ -21,18 +21,18 @@ import java.util.Map;
 @Order(value = 2)
 public class QuestionRunner implements ApplicationRunner {
 
-    @Autowired
-    private RedisUtils redisUtils;
+//    @Autowired
+//    private RedisUtils redisUtils;
 
-    @Autowired
-    private ExamUserService examUserService;
+//    @Autowired
+//    private ExamUserService examUserService;
 
     @Autowired
     private ExamQuestionService examQuestionService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        initRedisUser();
+        //initRedisUser();
 
         initEveryDayQuestion();
 
@@ -46,15 +46,15 @@ public class QuestionRunner implements ApplicationRunner {
 
 
     private void initRedisUser() {
-        redisUtils.delete("regUserList");
-        QueryWrapper<ExamUserEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq("status","1");
-        List<ExamUserEntity> list = examUserService.list(wrapper);
-        Map<String,Object> map = new HashMap<>();
-        for(ExamUserEntity examUserEntity:list) {
-            map.put(examUserEntity.getOpenid(),examUserEntity.getId());
-        }
-        redisUtils.setHash("regUserList",map);
+//        redisUtils.delete("regUserList");
+//        QueryWrapper<ExamUserEntity> wrapper = new QueryWrapper<>();
+//        wrapper.eq("status","1");
+//        List<ExamUserEntity> list = examUserService.list(wrapper);
+//        Map<String,Object> map = new HashMap<>();
+//        for(ExamUserEntity examUserEntity:list) {
+//            map.put(examUserEntity.getOpenid(),examUserEntity.getId());
+//        }
+//        redisUtils.setHash("regUserList",map);
     }
 
     public static void main(String[] args) {

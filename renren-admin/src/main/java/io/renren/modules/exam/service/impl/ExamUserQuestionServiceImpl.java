@@ -10,6 +10,7 @@ import io.renren.modules.exam.entity.ExamIntegralDetailsEntity;
 import io.renren.modules.exam.entity.ExamQuestionEntity;
 import io.renren.modules.exam.service.ExamIntegralCountService;
 import io.renren.modules.exam.service.ExamIntegralDetailsService;
+import io.renren.modules.exam.service.ExamQuestionService;
 import io.renren.modules.exam.vo.UserQuestionVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,8 @@ import io.renren.modules.exam.service.ExamUserQuestionService;
 @Service("examUserQuestionService")
 public class ExamUserQuestionServiceImpl extends ServiceImpl<ExamUserQuestionDao, ExamUserQuestionEntity> implements ExamUserQuestionService {
 
-    @Autowired
-    private RedisUtils redisUtils;
+//    @Autowired
+//    private RedisUtils redisUtils;
 
     @Autowired
     private ExamUserQuestionService examUserQuestionService;
@@ -44,6 +45,9 @@ public class ExamUserQuestionServiceImpl extends ServiceImpl<ExamUserQuestionDao
 
     @Autowired
     private ExamIntegralCountService examIntegralCountService;
+
+    @Autowired
+    private ExamQuestionService examQuestionService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -58,33 +62,47 @@ public class ExamUserQuestionServiceImpl extends ServiceImpl<ExamUserQuestionDao
     @Override
     public boolean saveAnswer(ExamUserQuestionEntity userQuestionEntity) {
         boolean flag = false;
-        List<Object> ids = redisUtils.getList("question_ids");
+        Date date = new Date();
+        String openid = userQuestionEntity.getOpenid();
 
-        if(!ids.contains(userQuestionEntity.getQuestionid()+"")) {
+//        List<Object> ids = redisUtils.getList("question_ids");
+//        if(!ids.contains(userQuestionEntity.getQuestionid()+"")) {
+//            throw new RRException("题目已经过期！");
+//        }
+
+        QueryWrapper<ExamUserQuestionEntity> wrappereuq = new QueryWrapper<>();
+        wrappereuq.eq("openid", openid);
+        wrappereuq.eq("DATE_FORMAT(create_time,'%Y-%m-%d')", DateUtils.format(date));
+        wrappereuq.eq("questionid", userQuestionEntity.getQuestionid());
+        if(examUserQuestionService.count() < 1) {
             throw new RRException("题目已经过期！");
         }
-        String openid = userQuestionEntity.getOpenid();
+
+
         QueryWrapper<ExamIntegralDetailsEntity> wrappereid = new QueryWrapper<>();
         wrappereid.eq("openid", openid);
-        wrappereid.eq("DATE_FORMAT(create_time,'%Y-%m-%d')", DateUtils.format(new Date()));
+        wrappereid.eq("DATE_FORMAT(create_time,'%Y-%m-%d')", DateUtils.format(date));
         ExamIntegralDetailsEntity detailsEntity = examIntegralDetailsService.getOne(wrappereid);
 
 
-        ExamQuestionEntity questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",String.valueOf(userQuestionEntity.getQuestionid()));
+        //ExamQuestionEntity questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",String.valueOf(userQuestionEntity.getQuestionid()));
+
+        ExamQuestionEntity questionEntity = examQuestionService.getById(userQuestionEntity.getQuestionid());
         if (userQuestionEntity.getAnswer().equals(questionEntity.getAnswer())) {
             //userQuestionEntity.setIntegral(questionEntity.getScore());
-            userQuestionEntity.setStatus("1");
+
             detailsEntity.setRightNum(detailsEntity.getRightNum()+1);
             flag = true;
         }
-        userQuestionEntity.setUpdateTime(new Date());
+        userQuestionEntity.setUpdateTime(date);
+        userQuestionEntity.setStatus("1");
         QueryWrapper<ExamUserQuestionEntity> wrapper = new QueryWrapper<>();
         wrapper.eq("openid", openid);
         wrapper.eq("questionid", userQuestionEntity.getQuestionid());
 
         examUserQuestionService.update(userQuestionEntity,wrapper);
 
-        Long count = redisUtils.getListSize("question_ids");
+        Long count = 5L;
 
         if (Long.valueOf(userQuestionEntity.getAnswerOrder()) == count) {
             detailsEntity.setIntegral(1);
@@ -110,17 +128,17 @@ public class ExamUserQuestionServiceImpl extends ServiceImpl<ExamUserQuestionDao
             if (countEntity != null) {
                 Integer icount = countEntity.getIntegralCount();
                 countEntity.setIntegralCount(icount+1);
-                countEntity.setUpdateTime(new Date());
+                countEntity.setUpdateTime(date);
             } else {
                 countEntity = new ExamIntegralCountEntity();
                 countEntity.setUserId(userQuestionEntity.getUserId());
                 countEntity.setIntegralCount(1);
-                countEntity.setCreateTime(new Date());
+                countEntity.setCreateTime(date);
             }
             examIntegralCountService.saveOrUpdate(countEntity);
-            redisUtils.delete("user_" + openid);
+            //redisUtils.delete("user_" + openid);
         } else {
-            redisUtils.removeList("user_" + openid, 1L, userQuestionEntity.getQuestionid());
+            //redisUtils.removeList("user_" + openid, 1L, userQuestionEntity.getQuestionid());
         }
         return flag;
     }

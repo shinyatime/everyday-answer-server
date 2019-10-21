@@ -34,8 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service("examQuestionService")
 public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQuestionEntity> implements ExamQuestionService {
 
-    @Autowired
-    private RedisUtils redisUtils;
+//    @Autowired
+//    private RedisUtils redisUtils;
 
     @Autowired
     private ExamUserQuestionService examUserQuestionService;
@@ -48,84 +48,102 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
 
     @Override
     public boolean saveEveryDayQuestion() {
-        redisUtils.delete("question_list","question_ids");
-        Date nowDate = new Date();
-        String ydate = DateUtils.format(DateUtils.addDateDays(nowDate,-1));
-        QueryWrapper<ExamQuestionidEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq("question_date",ydate);
-        ExamQuestionidEntity examQuestionidEntity = examQuestionidService.getOne(wrapper);
-
-
-        Long questionid = 0L;
-        if (examQuestionidEntity != null) {
-            questionid = examQuestionidEntity.getQuestionEndid();
-        }
-
-        QueryWrapper<ExamQuestionEntity> wrapper1 = new QueryWrapper<>();
-        wrapper1.gt("id",questionid);
-        wrapper1.eq("status","1");
-        wrapper1.orderByAsc("id");
-        wrapper1.last("limit 5");
-        List<ExamQuestionEntity> list = super.list(wrapper1);
-        if (list.size()==0) {
-            return false;
-        }
-
-        List<Object> ids = new ArrayList<>();
-        Map<String,Object> map = new HashMap<>();
-        Long maxid = 0L;
-        for (int i = 0 ; i < list.size() ; i++) {
-
-            ExamQuestionEntity examQuestionEntity = list.get(i);
-            map.put(String.valueOf(examQuestionEntity.getId()),examQuestionEntity);
-            ids.add(examQuestionEntity.getId()+"");
-            if (i == (list.size()-1)) {
-                maxid = examQuestionEntity.getId();
-            }
-        }
-
-        if (maxid != 0) {
-            wrapper = new QueryWrapper<>();
-            wrapper.eq("question_date",DateUtils.format(nowDate));
-            examQuestionidEntity = examQuestionidService.getOne(wrapper);
-            if (examQuestionidEntity == null) {
-                examQuestionidEntity = new ExamQuestionidEntity();
-                examQuestionidEntity.setQuestionEndid(maxid);
-                examQuestionidEntity.setQuestionDate(nowDate);
-                examQuestionidService.saveOrUpdate(examQuestionidEntity);
-            }
-        }
-
-        redisUtils.setHash("question_list",map);
-        redisUtils.setList("question_ids",ids);
+//        redisUtils.delete("question_list","question_ids");
+//        Date nowDate = new Date();
+//        String ydate = DateUtils.format(DateUtils.addDateDays(nowDate,-1));
+//        QueryWrapper<ExamQuestionidEntity> wrapper = new QueryWrapper<>();
+//        wrapper.eq("question_date",ydate);
+//        ExamQuestionidEntity examQuestionidEntity = examQuestionidService.getOne(wrapper);
+//
+//
+//        Long questionid = 0L;
+//        if (examQuestionidEntity != null) {
+//            questionid = examQuestionidEntity.getQuestionEndid();
+//        }
+//
+//        QueryWrapper<ExamQuestionEntity> wrapper1 = new QueryWrapper<>();
+//        wrapper1.gt("id",questionid);
+//        wrapper1.eq("status","1");
+//        wrapper1.orderByAsc("id");
+//        wrapper1.last("limit 5");
+//        List<ExamQuestionEntity> list = super.list(wrapper1);
+//        if (list.size()==0) {
+//            return false;
+//        }
+//
+//        List<Object> ids = new ArrayList<>();
+//        Map<String,Object> map = new HashMap<>();
+//        Long maxid = 0L;
+//        for (int i = 0 ; i < list.size() ; i++) {
+//
+//            ExamQuestionEntity examQuestionEntity = list.get(i);
+//            map.put(String.valueOf(examQuestionEntity.getId()),examQuestionEntity);
+//            ids.add(examQuestionEntity.getId()+"");
+//            if (i == (list.size()-1)) {
+//                maxid = examQuestionEntity.getId();
+//            }
+//        }
+//
+//        if (maxid != 0) {
+//            wrapper = new QueryWrapper<>();
+//            wrapper.eq("question_date",DateUtils.format(nowDate));
+//            examQuestionidEntity = examQuestionidService.getOne(wrapper);
+//            if (examQuestionidEntity == null) {
+//                examQuestionidEntity = new ExamQuestionidEntity();
+//                examQuestionidEntity.setQuestionEndid(maxid);
+//                examQuestionidEntity.setQuestionDate(nowDate);
+//                examQuestionidService.saveOrUpdate(examQuestionidEntity);
+//            }
+//        }
+//
+//        redisUtils.setHash("question_list",map);
+//        redisUtils.setList("question_ids",ids);
         return true;
     }
 
     public boolean getRandomEveryDayQuestion(){
-        redisUtils.delete("question_list","question_ids");
-        QueryWrapper<ExamQuestionEntity> wrapper1 = new QueryWrapper<>();
-        wrapper1.eq("status","1");
-        List<ExamQuestionEntity> list = super.list(wrapper1);
-        if (list.size()==0) {
-            return false;
-        }
-        if (list.size()>5) {
-            int num = list.size() - 5;
-            for (int i = 0 ; i < num ; i++) {
-                list.remove(new Random().nextInt(list.size()));
+        //redisUtils.delete("question_list","question_ids");
+
+        Date nowDate = new Date();
+        String ydate = DateUtils.format(nowDate);
+        QueryWrapper<ExamQuestionidEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("question_date",ydate);
+        ExamQuestionidEntity examQuestionidEntity = examQuestionidService.getOne(wrapper);
+
+        if (examQuestionidEntity == null) {
+            QueryWrapper<ExamQuestionEntity> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("status","1");
+            List<ExamQuestionEntity> list = super.list(wrapper1);
+            if (list.size()==0) {
+                return false;
             }
+            if (list.size()>5) {
+                int num = list.size() - 5;
+                for (int i = 0 ; i < num ; i++) {
+                    list.remove(new Random().nextInt(list.size()));
+                }
+            }
+
+            List<Object> ids = new ArrayList<>();
+            Map<String,Object> map = new HashMap<>();
+            for (int i = 0 ; i < list.size() ; i++) {
+                ExamQuestionEntity examQuestionEntity = list.get(i);
+                map.put(String.valueOf(examQuestionEntity.getId()),examQuestionEntity);
+                ids.add(examQuestionEntity.getId()+"");
+            }
+            examQuestionidEntity = new ExamQuestionidEntity();
+            examQuestionidEntity.setQuestionDate(nowDate);
+            examQuestionidEntity.setQuestionIds(StringUtils.join(ids.toArray(), ","));
+            examQuestionidService.save(examQuestionidEntity);
         }
 
-        List<Object> ids = new ArrayList<>();
-        Map<String,Object> map = new HashMap<>();
-        for (int i = 0 ; i < list.size() ; i++) {
-            ExamQuestionEntity examQuestionEntity = list.get(i);
-            map.put(String.valueOf(examQuestionEntity.getId()),examQuestionEntity);
-            ids.add(examQuestionEntity.getId()+"");
-        }
 
-        redisUtils.setHash("question_list",map);
-        redisUtils.setList("question_ids",ids);
+
+
+
+
+        //redisUtils.setHash("question_list",map);
+        //redisUtils.setList("question_ids",ids);
         //System.out.println(redisUtils.getList("question_ids"));
         return true;
     }
@@ -168,25 +186,37 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
 //        if ("".equals(userid)) {
 //            return R.error("用户信息错误");
 //        }
-        List<Object> questionids = redisUtils.getList("question_ids");
+        //List<Object> questionids = redisUtils.getList("question_ids");
+        Date nowDate = new Date();
+        String ydate = DateUtils.format(nowDate);
+        QueryWrapper<ExamQuestionidEntity> wrapperqi = new QueryWrapper<>();
+        wrapperqi.eq("question_date",ydate);
+        ExamQuestionidEntity examQuestionidEntity = examQuestionidService.getOne(wrapperqi);
+
+        if (examQuestionidEntity == null) {
+            throw new RRException("获取题目出错！");
+        }
+
+        String[] questionids = examQuestionidEntity.getQuestionIds().split(",");
+
 
         int num = 0;
         String firstquestionid = "";
         //存入用户明细
-        for(Object id : questionids) {
-            ExamQuestionEntity questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",String.valueOf(id));
+        for(String id : questionids) {
+            //ExamQuestionEntity questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",String.valueOf(id));
             ExamUserQuestionEntity uq = new ExamUserQuestionEntity();
             num = num + 1;
             uq.setOpenid(openid);
             uq.setUserId(Long.valueOf(user.getId()));
-            uq.setQuestionid(questionEntity.getId());
+            uq.setQuestionid(Long.valueOf(id));
             uq.setAnswerOrder(num);
             uq.setAnswerCount(1);
             uq.setCreateTime(new Date());
             examUserQuestionService.save(uq);
-            redisUtils.setList("user_"+openid,questionEntity.getId());
+            //redisUtils.setList("user_"+openid,questionEntity.getId());
             if(num == 1) {
-                firstquestionid = String.valueOf(questionEntity.getId());
+                firstquestionid = String.valueOf(Long.valueOf(id));
             }
         }
 
@@ -197,13 +227,13 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
         detailsEntity.setIntegral(0);
         detailsEntity.setIntegralType("0");
         detailsEntity.setCreateTime(new Date());
-        detailsEntity.setCount(questionids.size());
+        detailsEntity.setCount(questionids.length);
         detailsEntity.setRightNum(0);
         detailsEntity.setFinishNum(0);
         examIntegralDetailsService.save(detailsEntity);
 
-        Long datediff = DateUtils.getBetweenSecond(new Date(),DateUtils.getEndTime());
-        redisUtils.expire("user_"+openid,datediff);
+        //Long datediff = DateUtils.getBetweenSecond(new Date(),DateUtils.getEndTime());
+        //redisUtils.expire("user_"+openid,datediff);
         return firstquestionid;
     }
 

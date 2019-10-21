@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.renren.common.exception.RRException;
+import io.renren.common.utils.DateUtils;
 import io.renren.common.utils.R;
 import io.renren.common.utils.RedisUtils;
 import io.renren.modules.exam.entity.ExamIntegralDetailsEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -29,8 +31,8 @@ public class ApiController {
     @Autowired
     private WxMaService wxMaService;
 
-    @Autowired
-    private RedisUtils redisUtils;
+//    @Autowired
+//    private RedisUtils redisUtils;
 
     @Autowired
     private ExamUserService examUserService;
@@ -52,7 +54,8 @@ public class ApiController {
             WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(json.getString("code"));
             String openid = session.getOpenid();
 
-            String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+            // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+            String userid = getUserId(openid);
             if (userid == null|| "null".equals(userid) || "".equals(userid)) {
                 QueryWrapper<ExamUserEntity> wrapper = new QueryWrapper<>();
                 wrapper.eq("openid", openid);
@@ -81,49 +84,62 @@ public class ApiController {
         }
         userEntity.setCreateTime(new Date());
         examUserService.save(userEntity);
-        redisUtils.setHash("regUserList",userEntity.getOpenid()+"",userEntity.getId());
+        //redisUtils.setHash("regUserList",userEntity.getOpenid()+"",userEntity.getId());
         return R.ok();
     }
 
     @PostMapping("/user/getUserInfo")
     public R getUser(@RequestBody ExamUserEntity userEntity) {
         String openid = userEntity.getOpenid();
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+        String userid = getUserId(openid); ;
 
         if ("".equals(userid)) {
             return R.error("用户信息错误");
         }
         userEntity.setId(Long.valueOf(userid));
-        boolean flag = redisUtils.isKey("user_"+openid);
+        //boolean flag = redisUtils.isKey("user_"+openid);
+
+        QueryWrapper<ExamUserQuestionEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("user_id", userid);
+        wrapper.eq("DATE_FORMAT(create_time,'%Y-%m-%d')", DateUtils.format(new Date()));
+        wrapper.eq("status", '0');
+        wrapper.orderByAsc("answer_order");
+        List<ExamUserQuestionEntity> list = examUserQuestionService.list(wrapper);
+
         String questionid = "";
-        if (flag) {
-            questionid = String.valueOf(redisUtils.getListIndex("user_" + openid, 0));
+        int listnum = 0;
+        if (list.size() > 0) {
+            // questionid = String.valueOf(redisUtils.getListIndex("user_" + openid, 0));
+            questionid = ((ExamUserQuestionEntity)list.get(0)).getQuestionid()+"";
+            listnum = list.size();
         } else {
             questionid = String.valueOf(examQuestionService.saveUserQuestion(userEntity));
+            listnum = 5;
         }
         if ("".equals(questionid)) {
             throw new RRException("今日答题完毕！");
         }
-        ExamQuestionEntity questionEntity=null;
-        //if (!"".equals(questionid)) {
-            questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",questionid);
-            questionEntity.setAnswer("");
-        //}
-        Long count = redisUtils.getListSize("question_ids");
-        Long num = count - redisUtils.getListSize("user_" + openid) + 1;
+        //ExamQuestionEntity questionEntity = (ExamQuestionEntity) redisUtils.getHash("question_list",questionid);
+        ExamQuestionEntity questionEntity=examQuestionService.getById(Long.valueOf(questionid));
+        questionEntity.setAnswer("");
+
+        Long count = 5L;
+        Long num = count - listnum + 1;
         return R.ok().put("question",questionEntity).put("count",count).put("num",num);
     }
 
     @PostMapping("/user/saveAnswer")
     public R saveAnswer(@RequestBody ExamUserQuestionEntity userQuestionEntity) {
         String openid = userQuestionEntity.getOpenid();
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+        String userid = getUserId(openid); ;
 
         if ("".equals(userid)) {
             return R.error("用户信息错误");
@@ -139,10 +155,11 @@ public class ApiController {
     @ResponseBody
     public R getUserQuestionList(@RequestBody Map<String,Object> map) {
         String openid = map.containsKey("openid")?map.get("openid").toString():"";
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+        String userid = getUserId(openid); ;
         if ("".equals(userid)) {
             return R.error("用户信息错误");
         }
@@ -159,10 +176,11 @@ public class ApiController {
     @ResponseBody
     public R getUserQuestionPage(@RequestBody Map<String,Object> map) {
         String openid = map.containsKey("openid")?map.get("openid").toString():"";
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+String userid = getUserId(openid); ;
         if ("".equals(userid)) {
             return R.error("用户信息错误");
         }
@@ -177,10 +195,11 @@ public class ApiController {
     public R getUserQuestionOne(@RequestBody Map<String,Object> map) {
         String openid = map.containsKey("openid")?map.get("openid").toString():"";
 
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+        String userid = getUserId(openid); ;
         if ("".equals(userid)) {
             return R.error("用户信息错误");
         }
@@ -197,10 +216,11 @@ public class ApiController {
     public R getUserQuestionOneView(@RequestBody Map<String,Object> map) {
         String openid = map.containsKey("openid")?map.get("openid").toString():"";
 
-        if(openid==null||"".equals(openid)) {//参数错误
+        if(openid==null || "null".equals(openid) || "".equals(openid)) {//参数错误
             return R.error("参数格式错误");
         }
-        String userid = String.valueOf(redisUtils.getHash("regUserList", openid)) ;
+        // String userid = String.valueOf(redisUtils.getHash("regUserList", openid));
+        String userid = getUserId(openid);
         if ("".equals(userid)) {
             return R.error("用户信息错误");
         }
@@ -216,5 +236,16 @@ public class ApiController {
 
         UserQuestionVO userQuestion = examUserQuestionService.getUserQuestionOne(userQuestionEntity.getId());
         return R.ok().put("userQuestion",userQuestion);
+    }
+
+    private String getUserId(String openid) {
+        QueryWrapper<ExamUserEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq("openid",openid);
+        wrapper.eq("status","1");
+        ExamUserEntity userEntity=examUserService.getOne(wrapper);
+        if (userEntity != null) {
+            return String.valueOf(userEntity.getId());
+        }
+        return "";
     }
 }
