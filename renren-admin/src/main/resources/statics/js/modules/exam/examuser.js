@@ -7,7 +7,13 @@ $(function () {
 			{ label: '', name: 'openid', index: 'openid', width: 80 }, 			
 			{ label: '', name: 'userName', index: 'user_name', width: 80 }, 			
 			{ label: '创建时间', name: 'createTime', index: 'create_time', width: 80 }, 			
-			{ label: '状态 0：无效 1：有效', name: 'status', index: 'status', width: 80 }			
+			{ label: '状态 0：无效 1：有效', name: 'status', index: 'status', width: 80, formatter: function(value, options, row){
+                    return value === '0' ?
+                        '<span class="label label-danger">无效</span>' :
+                        '<span class="label label-success">有效</span>';
+                }
+
+            }
         ],
 		viewrecords: true,
         height: 385,

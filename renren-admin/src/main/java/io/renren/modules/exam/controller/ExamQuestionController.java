@@ -95,6 +95,21 @@ public class ExamQuestionController {
         return R.ok();
     }
 
+    /**
+     * 恢复
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/restore")
+    @RequiresPermissions("exam:examquestion:restore")
+    public R restore(@RequestBody Long[] ids){
+        ExamQuestionEntity examQuestionEntity = new ExamQuestionEntity();
+        examQuestionEntity.setStatus("1");
+        examQuestionService.update(examQuestionEntity,new QueryWrapper<ExamQuestionEntity>().in("id",Arrays.asList(ids)));
+
+        return R.ok();
+    }
+
     @PostMapping("/import")
     @RequiresPermissions("exam:examquestion:import")
     public R addQuestion(@RequestParam("file") MultipartFile file) {

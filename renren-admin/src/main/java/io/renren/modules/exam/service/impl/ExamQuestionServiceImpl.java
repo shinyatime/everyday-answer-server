@@ -101,6 +101,7 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
         return true;
     }
 
+    @Override
     public boolean getRandomEveryDayQuestion(){
         //redisUtils.delete("question_list","question_ids");
 
@@ -153,12 +154,14 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionDao, ExamQu
     public PageUtils queryPage(Map<String, Object> params) {
         String stem = (String)params.get("stem");
         String metas = (String)params.get("metas");
+        String tag = (String)params.get("tag");
 
         IPage<ExamQuestionEntity> page = this.page(
                 new Query<ExamQuestionEntity>().getPage(params),
                 new QueryWrapper<ExamQuestionEntity>()
                         .like(StringUtils.isNotBlank(stem),"stem", stem)
                         .like(StringUtils.isNotBlank(metas),"metas", metas)
+                        .like(StringUtils.isNotBlank(tag),"tag", tag)
                         .orderByDesc("id")
         );
 

@@ -14,6 +14,7 @@ $(function () {
                     }
                     return html;
                 }},
+            { label: '分类', name: 'tag', index: 'tag', width: 25 },
 			{ label: '题目', name: 'stem', index: 'stem', width: 150 },
 			{ label: '备选答案', name: 'metas', index: 'metas', width: 100, formatter: function(value, options, row){
 			    var html = '';
@@ -40,7 +41,7 @@ $(function () {
 			}
         ],
 		viewrecords: true,
-        height: 385,
+        height: 600,
         rowNum: 10,
 		rowList : [10,30,50],
         rownumbers: true, 
@@ -149,7 +150,8 @@ var vm = new Vue({
         isup: false,
         q: {
             stem:null,
-            metas:null
+            metas:null,
+            tag:null
         }
 	},
 	methods: {
@@ -231,6 +233,35 @@ var vm = new Vue({
              }, function(){
              });
 		},
+        restore: function(event) {
+            var ids = getSelectedRows();
+            if(ids == null){
+                return ;
+            }
+            var lock = false;
+            layer.confirm('确定要恢复选中的记录？', {
+                btn: ['确定','取消'] //按钮
+            }, function(){
+                if(!lock) {
+                    lock = true;
+                    $.ajax({
+                        type: "POST",
+                        url: baseURL + "exam/examquestion/restore",
+                        contentType: "application/json",
+                        data: JSON.stringify(ids),
+                        success: function(r){
+                            if(r.code == 0){
+                                layer.msg("操作成功", {icon: 1});
+                                $("#jqGrid").trigger("reloadGrid");
+                            }else{
+                                layer.alert(r.msg);
+                            }
+                        }
+                    });
+                }
+            }, function(){
+            });
+        },
 		getInfo: function(id){
 			$.get(baseURL + "exam/examquestion/info/"+id, function(r){
                 vm.examQuestion = r.examQuestion;
@@ -244,7 +275,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{
-                postData:{'stem': vm.q.stem,'metas': vm.q.metas},
+                postData:{'stem': vm.q.stem,'metas': vm.q.metas,'tag': vm.q.tag},
                 page:page
             }).trigger("reloadGrid");
 		},

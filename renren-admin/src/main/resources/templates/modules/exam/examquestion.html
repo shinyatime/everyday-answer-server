@@ -15,6 +15,11 @@
             <div class="form-group col-sm-2">
                 <input type="text" class="form-control" v-model="q.metas" placeholder="答案">
             </div>
+
+            <div class="form-group col-sm-1">
+                <input type="text" class="form-control" v-model="q.tag" placeholder="分类">
+            </div>
+
             <a class="btn btn-default" @click="query">查询</a>
             <#if shiro.hasPermission("exam:examquestion:save")>
             <a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
@@ -28,7 +33,10 @@
             <#if shiro.hasPermission("exam:examquestion:import")>
             <a class="btn btn-primary" @click="imp"><i class="fa fa-plus"></i>&nbsp;导入</a>
             </#if>
-            <!--<#if shiro.hasPermission("exam:examquestion:catchQuestion")>-->
+            <#if shiro.hasPermission("exam:examquestion:restore")>
+            <a class="btn btn-primary" @click="restore"><i class="glyphicon glyphicon-repeat"></i>&nbsp;批量恢复</a>
+            </#if>
+<!--<#if shiro.hasPermission("exam:examquestion:catchQuestion")>-->
             <!--<a class="btn btn-primary" @click="catchq"><i class="fa fa-plus"></i>&nbsp;缓存每日题目</a>-->
             <!--</#if>-->
         </div>
@@ -52,6 +60,14 @@
                 </select>
             </div>
         </div>
+
+        <div class="form-group">
+            <div class="col-sm-2 control-label">分类/标签</div>
+            <div class="col-sm-5">
+                <input type="text" class="form-control" v-model="examQuestion.tag" placeholder="分类"/>
+            </div>
+        </div>
+
         <div class="form-group">
             <div class="col-sm-2 control-label">题目</div>
             <div class="col-sm-5">
