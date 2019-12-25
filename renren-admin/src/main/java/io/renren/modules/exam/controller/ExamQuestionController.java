@@ -118,7 +118,7 @@ public class ExamQuestionController {
         try {
             examQuestionService.batchImport(fileName, file);
         } catch (Exception e) {
-            throw new RRException("导入失败！");
+            throw new RRException(e.getMessage());
         }
 
         return R.ok();

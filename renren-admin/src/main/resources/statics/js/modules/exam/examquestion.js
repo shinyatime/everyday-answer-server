@@ -83,7 +83,7 @@ $(function () {
                     $("#jqGrid").trigger("reloadGrid");
                     emptyFileUpload($('#crowd_file'))
                 } else {
-                    alert('上传失败！');
+                    alert(data.msg);
                 }
 
             },
